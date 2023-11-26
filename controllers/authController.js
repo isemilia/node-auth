@@ -1,5 +1,22 @@
 const User = require('../models/user');
 
+// handle errors
+const handleError = (e) => {
+    const errors = {};
+
+    if (e.message.includes('user validation failed:')) {
+        Object.values(e.errors).forEach(({ properties }) => {
+            errors[properties.path] = properties.message;
+        });
+    }
+
+    if (e.code && e.code === 11000) {
+        errors.username = 'Username is taken';
+    }
+
+    return errors;
+}
+
 const getSignup = (req, res) => {
     res.render('signup');
 };
@@ -18,8 +35,8 @@ const postSignup = async (req, res) => {
         });
         res.status(201).json(user);
     } catch (e) {
-        console.log(e);
-        res.status(400).json({ message: 'Could not create user' });
+        const errors = handleError(e);
+        res.status(400).json({ message: 'Could not create user', errors });
     }
 };
 
