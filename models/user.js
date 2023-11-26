@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { matches } = require('validator');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -16,18 +17,10 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// fire a function after saving a user
-
-// on "save" event, doc that was saved, next middleware
-userSchema.post('save', function (doc, next) {
-    console.log('new user has been created');
-    next();
-});
-
-// fire a function before saving a user
-userSchema.pre('save', function (next) {
-    // this refers to the instance of the user that will be created
-    console.log('user about to be created', this);
+// fire before saving a user
+userSchema.pre('save', async function (next) {
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
     next();
 });
 
