@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 // handle errors
 const handleError = (e) => {
@@ -17,6 +18,17 @@ const handleError = (e) => {
     return errors;
 }
 
+// 3 days in seconds
+const maxAge = 3 * 24 * 60 * 60;
+
+// create token
+const createToken = (id) => {
+    // what to encrypt, secret string, options
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: maxAge
+    });
+}
+
 const getSignup = (req, res) => {
     res.render('signup');
 };
@@ -33,10 +45,13 @@ const postSignup = async (req, res) => {
             username,
             password
         });
-        res.status(201).json(user);
+        const token = createToken(user._id);
+
+        res.cookie('token', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.status(201).json({ status: 'success', id: user._id });
     } catch (e) {
         const errors = handleError(e);
-        res.status(400).json({ message: 'Could not create user', errors });
+        res.status(400).json({ status: 'error', message: 'Could not create user', errors });
     }
 };
 

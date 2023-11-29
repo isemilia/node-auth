@@ -24,15 +24,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
   .then((result) => app.listen(4000))
   .catch((err) => console.log(err));
 
-// testing cookies
-app.get('/set-cookies', (req, res) => {
-  // res.setHeader('Set-Cookie', 'newUser=true');
-
-  res.cookie('newUser', false);
-  res.cookie('isEmployee', true, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true });
-
-  res.send('you got a cookie');
-});
+// cookies
 
 
 app.get('/read-cookies', (req, res) => {

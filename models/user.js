@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Username is required'],
         unique: true,
         lowercase: true,
-        validate: [(value) => matches(value, /[A-Za-z0-9]*/), 'Only letters and numbers']
+        validate: [(value) => matches(value, /[A-Za-z0-9]*/), 'Only letters and numbers'],
+        minlength: [3, 'At least 3 characters']
     },
     password: {
         type: String,
