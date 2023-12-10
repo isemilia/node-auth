@@ -78,9 +78,15 @@ const postLogin = async (req, res) => {
     }
 };
 
+const getLogout = (req, res) => {
+    res.cookie('token', '', {maxAge: 1});
+    res.redirect('/');
+}
+
 module.exports = {
     getLogin,
     postLogin,
     getSignup,
-    postSignup
+    postSignup,
+    getLogout
 }
