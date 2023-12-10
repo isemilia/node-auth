@@ -18,6 +18,21 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+// add a static method to the schema
+userSchema.statics.login = async function ({ username, password }) {
+    const user = await this.findOne({ username });
+    if (!user) {
+        throw new Error('Incorrect username')
+    }
+
+    // password that hasn't been hashed, hashed password
+    const isValid = await bcrypt.compare(password, user.password);
+    if (isValid) {
+        return user
+    } else {
+        throw new Error('Incorrect password');
+    }
+}
 // fire before saving a user
 userSchema.pre('save', async function (next) {
     const salt = await bcrypt.genSalt();
